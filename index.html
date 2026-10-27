@@ -1,0 +1,561 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Taxation</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    background:#f4f6f9;
+    margin:0;
+    padding:20px;
+}
+
+.container{
+    max-width:1000px;
+    margin:auto;
+    background:white;
+    padding:25px;
+    border-radius:10px;
+    box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+h1{
+    text-align:center;
+    color:#2c3e50;
+}
+
+.question{
+    margin-bottom:25px;
+    padding:15px;
+    border-left:5px solid #3498db;
+    background:#fafafa;
+    position: relative;
+    border-radius: 0 5px 5px 0;
+}
+
+.question p{
+    font-weight:bold;
+}
+
+.options label{
+    display:block;
+    margin:6px 0;
+    cursor:pointer;
+    padding:6px;
+    border-radius:4px;
+    transition: background 0.2s;
+}
+
+.options label:hover {
+    background: #f0f0f0;
+}
+
+button{
+    display:block;
+    margin:30px auto;
+    padding:12px 30px;
+    font-size:18px;
+    border:none;
+    background:#27ae60;
+    color:white;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#219150;
+}
+
+#result{
+    margin-top:30px;
+    padding:20px;
+    background:#eef9ee;
+    border:1px solid #27ae60;
+    display:none;
+}
+
+.correct-option {
+    background-color: #d4edda !important;
+    color: #155724;
+    font-weight: bold;
+}
+
+.wrong-option {
+    background-color: #f8d7da !important;
+    color: #721c24;
+    font-weight: bold;
+}
+
+.correct{
+    color:green;
+    font-weight:bold;
+}
+
+.wrong{
+    color:red;
+    font-weight:bold;
+}
+
+.instant-feedback {
+    margin-top: 10px;
+    font-weight: bold;
+    font-size: 15px;
+}
+</style>
+</head>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+<script>
+  window.addEventListener("load", function () {
+      alert("this website is owned by shresth3125");
+  });
+</script>
+
+<body>
+
+<div class="container">
+
+<h1>Taxation : Active Recall</h1>
+
+<form id="quizForm"></form>
+
+<div class="rainbow-button-wrapper">
+  <button type="button" id="submitBtn" onclick="submitQuiz()">
+      🚀 Want to Submit Test Samridhi? Click here 
+  </button>
+</div>
+
+<div id="result"></div>
+
+</div>
+
+<script>
+
+const masterQuestions = [
+{
+q:"With reference to the classification of taxes by their burden in relation to income, consider the following statements: <br>1. Under a progressive tax, the tax rate rises as income rises. <br>2. Under a regressive tax, lower-income taxpayers may pay a larger proportion of their income in tax. <br>3. Under a proportional tax, the percentage of income paid as tax remains constant. <br>Which of the statements given above are correct?",
+type:"single",
+options:["A) 1 only","B) 1 and 2 only","C) 2 and 3 only","D) 1, 2 and 3"],
+answer:"D) 1, 2 and 3"
+},
+{
+q:"Consider the following statements about direct and indirect taxes: <br>1. A direct tax is imposed directly on a person or entity and its burden is generally not shifted to another person. <br>2. In an indirect tax, the person who remits the tax to the government must always be the person who ultimately bears its economic burden. <br>3. GST is described in the chapter as an indirect tax whose ultimate burden is borne by the final consumer. <br>Which of the statements are correct?",
+type:"single",
+options:["A) 1 and 3 only","B) 1 and 2 only","C) 2 and 3 only","D) 1, 2 and 3"],
+answer:"A) 1 and 3 only"
+},
+{
+q:"Which one of the following is correctly matched?",
+type:"single",
+options:["A) Corporate tax — tax on the value of goods imported","B) Capital gains tax — tax on profit from sale of a capital asset","C) Customs duty — tax only on services supplied within a state","D) Securities transaction tax — tax on the annual value of owned residential property"],
+answer:"B) Capital gains tax — tax on profit from sale of a capital asset"
+},
+{
+q:"With reference to cess and surcharge, consider the following statements: <br>1. A cess is generally imposed for a specified purpose. <br>2. A surcharge is an additional charge on the regular tax amount and, according to the chapter, is not earmarked for a specific purpose. <br>3. The chapter states that both cess and surcharge are calculated on the taxpayer’s gross income rather than on tax liability. <br>Which are correct?",
+type:"single",
+options:["A) 1 only","B) 1 and 2 only","C) 2 and 3 only","D) 1, 2 and 3"],
+answer:"B) 1 and 2 only"
+},
+{
+q:"According to the chapter’s surcharge table, which of the following is correctly matched?",
+type:"single",
+options:["A) Income up to ₹50 lakh — 10%","B) ₹50 lakh to ₹1 crore — 15%","C) ₹1 crore to ₹2 crore — 15%","D) Above ₹5 crore — 25%"],
+answer:"C) ₹1 crore to ₹2 crore — 15%"
+},
+{
+q:"Consider the following statements about cess: <br>1. The chapter describes cess as a “tax on tax”. <br>2. It states that cess revenue goes into the Consolidated Fund of India. <br>3. A cess can never be levied on specified goods or imports. <br>Which are correct?",
+type:"single",
+options:["A) 1 and 2 only","B) 1 and 3 only","C) 2 and 3 only","D) 1, 2 and 3"],
+answer:"A) 1 and 2 only"
+},
+{
+q:"Which of the following constitutional provisions is correctly matched?",
+type:"single",
+options:["A) Article 265 — GST Council","B) Article 279A — no tax without authority of law","C) Article 243H — Panchayats’ power to levy, collect and appropriate specified taxes, duties, tolls and fees, subject to state law","D) Article 275 — exclusive Parliament power over inter-State GST"],
+answer:"C) Article 243H — Panchayats’ power to levy, collect and appropriate specified taxes, duties, tolls and fees, subject to state law"
+},
+{
+q:"Consider the following statements: <br>1. Article 265 says that no tax shall be levied or collected except by authority of law. <br>2. Article 246A(1) empowers Parliament and State Legislatures to make laws with respect to GST. <br>3. Article 246A(2) gives Parliament exclusive power to make laws with respect to GST on inter-State supplies. <br>Which are correct?",
+type:"single",
+options:["A) 1 only","B) 1 and 2 only","C) 2 and 3 only","D) 1, 2 and 3"],
+answer:"D) 1, 2 and 3"
+},
+{
+q:"With reference to the GST Council, consider the following statements: <br>1. It is a constitutional body provided for under Article 279A. <br>2. The chapter says it makes recommendations on GST rates and exemptions. <br>3. Its chairperson is the Union Finance Minister. <br>4. Its recommendations are constitutionally binding on Parliament and State Legislatures in every circumstance. <br>Which are correct?",
+type:"single",
+options:["A) 1 and 2 only","B) 1, 2 and 3 only","C) 2, 3 and 4 only","D) 1, 2, 3 and 4"],
+answer:"B) 1, 2 and 3 only"
+},
+{
+q:"Which of the following is the best description of Article 243X?",
+type:"single",
+options:["A) It provides for the creation of the GST Council.","B) It concerns the taxation powers of Municipalities, subject to state law.","C) It provides grants from the Union to states.","D) It prohibits all local taxation."],
+answer:"B) It concerns the taxation powers of Municipalities, subject to state law."
+},
+{
+q:"Consider the following pairs: <br>1. Article 275 — grants from the Union to states <br>2. Article 246 — distribution of legislative powers, including tax entries in the Seventh Schedule <br>3. Article 279A — GST Council <br>4. Article 265 — authority of law required for levy or collection of tax. <br>How many pairs are correctly matched?",
+type:"single",
+options:["A) Only one","B) Only two","C) Only three","D) All four"],
+answer:"D) All four"
+},
+{
+q:"Which one of the following best distinguishes CGST and SGST from IGST?",
+type:"single",
+options:["A) CGST and SGST apply to inter-State supplies; IGST applies only within a state.","B) CGST and SGST are levied simultaneously on intra-State supplies; IGST applies to inter-State supplies.","C) CGST is levied by states and SGST by the Union.","D) IGST is levied only by municipal bodies."],
+answer:"B) CGST and SGST are levied simultaneously on intra-State supplies; IGST applies to inter-State supplies."
+},
+{
+q:"UTGST, according to the chapter, applies primarily to:",
+type:"single",
+options:["A) Inter-State supplies in every state","B) Intra-State supplies in Union Territories without a legislature","C) Imports alone","D) Intra-State supplies in all states and Union Territories with legislatures"],
+answer:"B) Intra-State supplies in Union Territories without a legislature"
+},
+{
+q:"Consider the following statements on the introduction of GST: <br>1. The chapter gives 1 July 2017 as the date of GST’s introduction in India. <br>2. GST replaced several earlier indirect taxes, including VAT and service tax. <br>3. Customs duty was entirely abolished when GST was introduced. <br>Which are correct?",
+type:"single",
+options:["A) 1 and 2 only","B) 1 and 3 only","C) 2 and 3 only","D) 1, 2 and 3"],
+answer:"A) 1 and 2 only"
+},
+{
+q:"Which one of the following is NOT identified in the chapter as a key benefit of GST?",
+type:"single",
+options:["A) Reduction in the cascading effect of taxes","B) Rationalisation of tax rates","C) Increase in tax revenue","D) Elimination of every compliance obligation for small businesses"],
+answer:"D) Elimination of every compliance obligation for small businesses"
+},
+{
+q:"Input Tax Credit (ITC) is intended primarily to:",
+type:"single",
+options:["A) Tax the same value repeatedly at every stage","B) Allow credit for tax paid on business inputs and reduce cascading","C) Exempt every final consumer from GST","D) Replace the GST Council"],
+answer:"B) Allow credit for tax paid on business inputs and reduce cascading"
+},
+{
+q:"A producer pays ₹20 GST on inputs and collects ₹40 GST on its sales. Assuming the full input credit is eligible and ignoring other adjustments, how much net GST does it pay to the government?",
+type:"single",
+options:["A) ₹60","B) ₹40","C) ₹20","D) ₹0"],
+answer:"C) ₹20"
+},
+{
+q:"In the chapter’s timber-to-furniture example, the final consumer pays the total tax embedded in the final price. Which statement best explains this?",
+type:"single",
+options:["A) Businesses cannot claim ITC under GST.","B) Each business pays tax on its entire turnover without credit.","C) Businesses collect output tax, claim eligible input credit, and remit tax on the value added; the final consumer bears the total burden.","D) Only the retailer remits any GST to the government."],
+answer:"C) Businesses collect output tax, claim eligible input credit, and remit tax on the value added; the final consumer bears the total burden."
+},
+{
+q:"Consider the following statements about GST challenges listed in the chapter: <br>1. Technical glitches in the GST Network can delay returns and compliance. <br>2. Compliance can impose a burden on small businesses. <br>3. Some states have experienced revenue losses under GST. <br>Which are correct?",
+type:"single",
+options:["A) 1 only","B) 1 and 2 only","C) 2 and 3 only","D) 1, 2 and 3"],
+answer:"D) 1, 2 and 3"
+},
+{
+q:"The chapter’s GST 2.0 section states that the revised rate structure introduced in 2025 mainly uses which principal rates, alongside a special rate?",
+type:"single",
+options:["A) 2% and 12%, with a 30% special rate","B) 5% and 18%, with a 40% special rate","C) 6% and 16%, with a 35% special rate","D) 12% and 28%, with no special rate"],
+answer:"B) 5% and 18%, with a 40% special rate"
+},
+{
+q:"According to the chapter’s GST 2.0 table, which category is associated with the 40% special demerit rate?",
+type:"single",
+options:["A) Fresh fruits, milk and eggs","B) Packaged food and footwear","C) Most consumer durables and IT services","D) Pan masala, tobacco products, aerated drinks and high-end cars"],
+answer:"D) Pan masala, tobacco products, aerated drinks and high-end cars"
+},
+{
+q:"Which of the following is correctly matched according to the chapter’s GST 2.0 table?",
+type:"single",
+options:["A) 0% / exempt — specified essential goods and services","B) 5% — high-end cars and yachts","C) 18% — only fresh fruits and vegetables","D) 40% — education services"],
+answer:"A) 0% / exempt — specified essential goods and services"
+},
+{
+q:"Consider the following statements about taxes subsumed under GST as described in the chapter: <br>1. Service tax is listed among taxes replaced by GST. <br>2. State VAT/sales tax is listed among taxes subsumed under GST. <br>3. Customs duty was fully subsumed under GST. <br>4. The chapter notes that Central Excise Duty continues mainly on specified petroleum products and tobacco products. <br>Which are correct?",
+type:"single",
+options:["A) 1 and 2 only","B) 1, 2 and 4 only","C) 2, 3 and 4 only","D) 1, 2, 3 and 4"],
+answer:"B) 1, 2 and 4 only"
+},
+{
+q:"Which of the following is an example of a central indirect tax that the chapter says continues after GST?",
+type:"single",
+options:["A) Municipal property tax","B) Profession tax","C) Customs duty","D) State luxury tax in its pre-GST form"],
+answer:"C) Customs duty"
+},
+{
+q:"Tax-GDP ratio is calculated as:",
+type:"single",
+options:["A) GDP ÷ total tax revenue × 100","B) Total tax revenue ÷ GDP × 100","C) Total government expenditure ÷ GDP × 100","D) Fiscal deficit ÷ total tax revenue × 100"],
+answer:"B) Total tax revenue ÷ GDP × 100"
+},
+{
+q:"Suppose total tax revenue is ₹30 lakh crore and GDP is ₹300 lakh crore. What is the Tax-GDP ratio?",
+type:"single",
+options:["A) 1%","B) 5%","C) 10%","D) 30%"],
+answer:"C) 10%"
+},
+{
+q:"Which of the following are identified in the chapter as reasons for India’s historically low Tax-GDP ratio? <br>1. Large informal sector <br>2. Tax evasion <br>3. Low compliance <br>4. Excessively high tax compliance by every taxpayer. <br>Select the correct answer:",
+type:"single",
+options:["A) 1 and 2 only","B) 1, 2 and 3 only","C) 2, 3 and 4 only","D) 1, 2, 3 and 4"],
+answer:"B) 1, 2 and 3 only"
+},
+{
+q:"Which of the following initiatives is mentioned in the chapter as a way to improve tax collection or widen the tax base?",
+type:"single",
+options:["A) Benami Transactions (Prohibition) Act","B) Abolition of all digital tax administration","C) Elimination of voluntary income disclosure","D) Replacement of every direct tax with customs duty"],
+answer:"A) Benami Transactions (Prohibition) Act"
+},
+{
+q:"Tax expenditure refers to:",
+type:"single",
+options:["A) Only money spent by the government to collect taxes","B) Revenue foregone because tax provisions provide exemptions, deductions, credits, deferrals or other benefits","C) A tax levied exclusively on government expenditure","D) A penalty imposed for filing returns late"],
+answer:"B) Revenue foregone because tax provisions provide exemptions, deductions, credits, deferrals or other benefits"
+},
+{
+q:"Which of the following is an example of tax expenditure mentioned in the chapter?",
+type:"single",
+options:["A) Deduction for health insurance premiums","B) Customs duty on every imported good","C) A fine for hiding income","D) A municipal toll collected at a bridge"],
+answer:"A) Deduction for health insurance premiums"
+},
+{
+q:"Consider the following statements about tax expenditure: <br>1. It may encourage desired behaviour, such as investment in renewable energy. <br>2. It can reduce government revenue. <br>3. It may complicate the tax system and create opportunities for avoidance or evasion. <br>4. It is always effective and cannot produce selective benefits. <br>Which are correct?",
+type:"single",
+options:["A) 1 and 2 only","B) 1, 2 and 3 only","C) 2, 3 and 4 only","D) 1, 2, 3 and 4"],
+answer:"B) 1, 2 and 3 only"
+},
+{
+q:"Which scenario is most clearly tax evasion under the chapter’s definition?",
+type:"single",
+options:["A) A taxpayer claims a deduction expressly permitted by law.","B) A taxpayer invests in a tax-saving scheme and claims an eligible deduction.","C) A business earns ₹50 lakh but deliberately reports only ₹30 lakh to the tax authorities.","D) A taxpayer uses a lawful exemption available under the tax code."],
+answer:"C) A business earns ₹50 lakh but deliberately reports only ₹30 lakh to the tax authorities."
+},
+{
+q:"Consider the following statements: <br>1. Tax evasion is illegal. <br>2. Tax avoidance involves using legal provisions to reduce tax liability. <br>3. The chapter notes that tax avoidance can remain controversial despite being legal. <br>Which are correct?",
+type:"single",
+options:["A) 1 only","B) 1 and 2 only","C) 2 and 3 only","D) 1, 2 and 3"],
+answer:"D) 1, 2 and 3"
+},
+{
+q:"Which of the following is identified in the chapter as a way black money may be generated or moved? <br>1. Underreporting income <br>2. Bribery <br>3. Money laundering <br>4. Hawala transactions. <br>Select the correct answer:",
+type:"single",
+options:["A) 1 and 2 only","B) 1, 2 and 3 only","C) 2, 3 and 4 only","D) 1, 2, 3 and 4"],
+answer:"D) 1, 2, 3 and 4"
+},
+{
+q:"Which statement best captures the chapter’s description of black money?",
+type:"single",
+options:["A) All cash held by households, whether reported or not","B) Income or assets earned or acquired through illegal means and not reported for tax purposes","C) Only foreign currency legally held abroad","D) Only money deposited in a bank account"],
+answer:"B) Income or assets earned or acquired through illegal means and not reported for tax purposes"
+},
+{
+q:"Which of the following is correctly matched with the chapter’s summary of direct taxes?",
+type:"single",
+options:["A) Income tax — levied by local bodies on goods entering a town","B) Corporate tax — tax on company profits","C) Capital gains tax — tax on imports","D) Securities transaction tax — tax on the manufacture of petroleum products"],
+answer:"B) Corporate tax — tax on company profits"
+},
+{
+q:"According to the chapter’s direct-tax summary table, which tax is marked as abolished in 2020?",
+type:"single",
+options:["A) Wealth tax","B) Estate duty","C) Dividend distribution tax","D) Fringe benefits tax"],
+answer:"C) Dividend distribution tax"
+},
+{
+q:"Which one of the following is correctly matched according to the chapter’s indirect-tax summary?",
+type:"single",
+options:["A) Octroi — local-body tax on goods entering a city or town","B) Protective duty — tax on salaries of individuals","C) Anti-dumping duty — tax on property ownership","D) State excise duty — tax levied exclusively by the Union on corporate profits"],
+answer:"A) Octroi — local-body tax on goods entering a city or town"
+},
+{
+q:"Which duty is described as offsetting an advantage enjoyed by foreign producers because of subsidies provided by their government?",
+type:"single",
+options:["A) Safeguard duty","B) Countervailing duty","C) Protective duty","D) Estate duty"],
+answer:"B) Countervailing duty"
+},
+{
+q:"Which duty is intended to respond to a sudden surge in imports?",
+type:"single",
+options:["A) Safeguard duty","B) Countervailing duty","C) Profession tax","D) Securities transaction tax"],
+answer:"A) Safeguard duty"
+},
+{
+q:"Which of the following is correctly matched?",
+type:"single",
+options:["A) Anti-dumping duty — discourages imports sold below normal value in the exporting country","B) Safeguard duty — tax on profits from selling land","C) Protective duty — tax on an individual’s salary","D) Central Sales Tax — tax exclusively on intra-State supply of services under GST"],
+answer:"A) Anti-dumping duty — discourages imports sold below normal value in the exporting country"
+},
+{
+q:"The chapter states that personal income tax in India is governed by which law?",
+type:"single",
+options:["A) Companies Act, 2013","B) Income-tax Act, 1961","C) Goods and Services Tax Act, 2017","D) Constitution (Seventh Amendment) Act, 1956"],
+answer:"B) Income-tax Act, 1961"
+},
+{
+q:"Using the chapter’s FY 2025–26 slab table, a taxpayer has taxable income of ₹14 lakh. Ignoring cess, surcharge, rebates and other adjustments, what tax does the chapter’s worked example calculate?",
+type:"single",
+options:["A) ₹60,000","B) ₹75,000","C) ₹90,000","D) ₹1,40,000"],
+answer:"C) ₹90,000"
+},
+{
+q:"Consider the following statements about Minimum Alternate Tax (MAT), as described in the chapter: <br>1. It is intended to ensure that certain companies with exemptions or deductions pay a minimum amount of tax. <br>2. The chapter states a MAT rate of 15% of book profit. <br>3. MAT applies to individuals and partnerships in the same way as companies. <br>Which are correct?",
+type:"single",
+options:["A) 1 only","B) 1 and 2 only","C) 2 and 3 only","D) 1, 2 and 3"],
+answer:"B) 1 and 2 only"
+},
+{
+q:"A company has book profit of ₹1 crore. Using the chapter’s stated MAT rate of 15%, what is 15% of its book profit?",
+type:"single",
+options:["A) ₹1.5 lakh","B) ₹10 lakh","C) ₹15 lakh","D) ₹25 lakh"],
+answer:"C) ₹15 lakh"
+},
+{
+q:"Which of the following statements about corporate tax is consistent with the uploaded chapter?",
+type:"single",
+options:["A) It is a direct tax on profits earned by companies and corporations.","B) It is an indirect tax collected only at customs ports.","C) It is levied only on the gross turnover and never on profits.","D) It is imposed by municipal corporations on property values."],
+answer:"A) It is a direct tax on profits earned by companies and corporations."
+},
+{
+q:"The chapter’s tax-neutrality section is best summarised by which statement?",
+type:"single",
+options:["A) Taxes should deliberately favour one industry in every circumstance.","B) Tax design should ideally avoid distorting economic decisions or favouring one activity over another.","C) Tax neutrality means no government can levy any tax.","D) Tax neutrality requires all taxes to have a zero rate."],
+answer:"B) Tax design should ideally avoid distorting economic decisions or favouring one activity over another."
+},
+{
+q:"Which option correctly distinguishes a tax holiday from tax amnesty at a broad conceptual level?",
+type:"single",
+options:["A) A tax holiday is a temporary tax exemption or relief for eligible activity; tax amnesty is a scheme that may allow taxpayers to disclose or regularise past non-compliance under specified conditions.","B) Both terms mean a permanent abolition of all taxes.","C) A tax holiday is a penalty for hiding income; tax amnesty is a customs duty.","D) Both apply exclusively to taxes on imported goods."],
+answer:"A) A tax holiday is a temporary tax exemption or relief for eligible activity; tax amnesty is a scheme that may allow taxpayers to disclose or regularise past non-compliance under specified conditions."
+},
+{
+q:"Consider the following statements about tax administration and the Tax-GDP ratio: <br>1. The chapter identifies technology and improved tax administration as measures to improve tax collection. <br>2. Widening the tax base is one of the measures mentioned. <br>3. Cracking down on tax evasion is among the measures mentioned. <br>4. The chapter argues that the informal sector raises the Tax-GDP ratio because it is fully registered and taxed. <br>Which are correct?",
+type:"single",
+options:["A) 1 and 2 only","B) 1, 2 and 3 only","C) 2, 3 and 4 only","D) 1, 2, 3 and 4"],
+answer:"B) 1, 2 and 3 only"
+},
+{
+q:"Consider the following statements about the overall purpose and design of taxation: <br>1. Taxation generates government revenue for public goods and services. <br>2. Tax design can influence economic behaviour and policy outcomes. <br>3. Tax expenditure may be used to encourage activities that government wants to promote, but it can also reduce revenue and create complexity. <br>4. An indirect tax is necessarily progressive because it is included in the price of goods and services. <br>Which are correct?",
+type:"single",
+options:["A) 1 and 2 only","B) 1, 2 and 3 only","C) 2, 3 and 4 only","D) 1, 2, 3 and 4"],
+answer:"B) 1, 2 and 3 only"
+}
+];
+
+function loadQuiz() {
+    const form = document.getElementById("quizForm");
+    let html = "";
+    
+    masterQuestions.forEach((item, index) => {
+        html += `<div class="question" id="q-block-${index}">`;
+        html += `<p>Q${index + 1}. ${item.q}</p>`;
+        html += `<div class="options" id="options-${index}">`;
+        
+        item.options.forEach(opt => {
+            html += `<label id="label-${index}-${CSS.escape(opt)}"><input type="radio" name="q${index}" value="${opt}" onchange="checkInstant(${index}, '${opt.replace(/'/g, "\\'")}')"> ${opt}</label>`;
+        });
+        
+        html += `</div>`;
+        html += `<div class="instant-feedback" id="feedback-${index}"></div>`;
+        html += `</div>`;
+    });
+    
+    form.innerHTML = html;
+}
+
+function checkInstant(index, selectedOpt) {
+    const item = masterQuestions[index];
+    const feedbackDiv = document.getElementById(`feedback-${index}`);
+    
+    // Clear previous highlights for this question options
+    item.options.forEach(opt => {
+        const lbl = document.getElementById(`label-${index}-${CSS.escape(opt)}`);
+        if (lbl) {
+            lbl.classList.remove("correct-option", "wrong-option");
+        }
+    });
+
+    const selectedLbl = document.getElementById(`label-${index}-${CSS.escape(selectedOpt)}`);
+    
+    if (selectedOpt === item.answer) {
+        if (selectedLbl) selectedLbl.classList.add("correct-option");
+        feedbackDiv.innerHTML = `<span class="correct">✔ Correct!</span>`;
+    } else {
+        if (selectedLbl) selectedLbl.classList.add("wrong-option");
+        feedbackDiv.innerHTML = `<span class="wrong">✖ Wrong!</span>`;
+    }
+}
+
+function submitQuiz() {
+    let score = 0;
+    let attempted = 0;
+    
+    masterQuestions.forEach((item, index) => {
+        const radios = document.getElementsByName(`q${index}`);
+        let selectedVal = null;
+        
+        for (let r of radios) {
+            if (r.checked) {
+                selectedVal = r.value;
+                break;
+            }
+        }
+        
+        const feedbackDiv = document.getElementById(`feedback-${index}`);
+        
+        // Clear options styling first
+        item.options.forEach(opt => {
+            const lbl = document.getElementById(`label-${index}-${CSS.escape(opt)}`);
+            if (lbl) {
+                lbl.classList.remove("correct-option", "wrong-option");
+            }
+        });
+
+        // Highlight correct option for all questions upon submission
+        const correctLbl = document.getElementById(`label-${index}-${CSS.escape(item.answer)}`);
+        if (correctLbl) {
+            correctLbl.classList.add("correct-option");
+        }
+        
+        if (selectedVal !== null) {
+            attempted++;
+            if (selectedVal === item.answer) {
+                score++;
+                feedbackDiv.innerHTML = `<span class="correct">✔ Correct!</span>`;
+            } else {
+                const wrongLbl = document.getElementById(`label-${index}-${CSS.escape(selectedVal)}`);
+                if (wrongLbl) {
+                    wrongLbl.classList.add("wrong-option");
+                }
+                feedbackDiv.innerHTML = `<span class="wrong">✖ Wrong! Correct answer: ${item.answer}</span>`;
+            }
+        } else {
+            feedbackDiv.innerHTML = `<span class="wrong">⚠ Not attempted! Correct answer: ${item.answer}</span>`;
+        }
+    });
+    
+    const resultDiv = document.getElementById("result");
+    resultDiv.style.display = "block";
+    resultDiv.innerHTML = `<h3>Test Results</h3>
+                          <p>Total Questions: ${masterQuestions.length}</p>
+                          <p>Attempted: ${attempted}</p>
+                          <p>Score: <b>${score} / ${masterQuestions.length}</b></p>`;
+                          
+    if (score === masterQuestions.length) {
+        if (typeof confetti === "function") {
+            confetti({
+                particleCount: 150,
+                spread: 80,
+                origin: { y: 0.6 }
+            });
+        }
+    }
+    
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+}
+
+window.onload = function() {
+    loadQuiz();
+};
+
+</script>
+</body>
+</html>
+
+```
